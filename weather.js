@@ -1,10 +1,15 @@
-// weather.js: finds where you are and gets the weather there.
+// weather.js: gets the weather for the city you type in.
 // Weather comes from Open-Meteo, a free service that needs no sign-up or key.
+// The app never uses your device's location (GPS). Only the city you type.
 
 // ===== Part 1: Settings and saved info =====
 
-const LOCATION_KEY = "wardrobe-location"; // where your location is remembered
-const UNIT_KEY = "wardrobe-unit";         // "F" or "C" (a Settings page comes in step 7)
+const CITY_KEY = "wardrobe-city";  // where your chosen city is remembered
+const UNIT_KEY = "wardrobe-unit";  // "F" or "C" (a Settings page comes in step 7)
+
+// Clean-up: an older version could save a GPS position under this name.
+// Delete it so no device location is kept in the browser.
+localStorage.removeItem("wardrobe-location");
 
 // The latest weather. The outfit builder (step 5) will read this.
 // Temperatures are kept in °C here and only changed to °F for display.
@@ -64,13 +69,13 @@ function describeSky(code) {
   return "unknown";
 }
 
-// Remembers your location so the app doesn't ask every time
+// Remembers your city so you only type it once
 function saveLocation(location) {
-  localStorage.setItem(LOCATION_KEY, JSON.stringify(location));
+  localStorage.setItem(CITY_KEY, JSON.stringify(location));
 }
 function loadLocation() {
   try {
-    return JSON.parse(localStorage.getItem(LOCATION_KEY));
+    return JSON.parse(localStorage.getItem(CITY_KEY));
   } catch {
     return null;
   }
@@ -118,37 +123,9 @@ function showWeather() {
   weatherPlace.textContent = currentWeather.place;
 }
 
-// ===== Part 5: Finding your location =====
+// ===== Part 5: Finding your city =====
 
-// Option A: ask the device (GPS or Wi-Fi). The browser will ask your permission.
-function useDeviceLocation() {
-  if (!("geolocation" in navigator)) {
-    showCityForm("This browser can't share your location. Type your city instead.");
-    return;
-  }
-  setWeatherMessage("Requesting location... (allow it if your browser asks)");
-
-  navigator.geolocation.getCurrentPosition(
-    // Success: we got a position
-    (position) => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-      // Show coordinates like "47.61N 122.33W" as the place name
-      const name =
-        Math.abs(lat).toFixed(2) + (lat >= 0 ? "N " : "S ") +
-        Math.abs(lon).toFixed(2) + (lon >= 0 ? "E" : "W");
-      const location = { lat, lon, name };
-      saveLocation(location);
-      cityForm.hidden = true;
-      getWeather(location);
-    },
-    // Failure: you said no, or the device couldn't find you
-    () => showCityForm("Location not available. Type your city instead."),
-    { timeout: 10000, maximumAge: 10 * 60 * 1000 } // wait up to 10 s; a 10-minute-old position is fine
-  );
-}
-
-// Option B: you type a city, and Open-Meteo's free search finds it
+// You type a city, and Open-Meteo's free search finds where it is
 async function searchCity(event) {
   event.preventDefault(); // stop the page from reloading
   const city = cityInput.value.trim();
@@ -190,22 +167,21 @@ function showCityForm(message) {
 document.getElementById("weather-refresh").addEventListener("click", () => {
   const location = loadLocation();
   if (location) getWeather(location);
-  else useDeviceLocation();
+  else showCityForm("Type your city to see the weather.");
 });
 
-// "Location" button opens or closes the city box
+// "City" button opens or closes the city box
 document.getElementById("weather-change").addEventListener("click", () => {
-  if (cityForm.hidden) showCityForm("Type a city, or press Use GPS.");
+  if (cityForm.hidden) showCityForm("Type a new city.");
   else {
     cityForm.hidden = true;
     setWeatherMessage("");
   }
 });
 
-document.getElementById("use-gps-button").addEventListener("click", useDeviceLocation);
 cityForm.addEventListener("submit", searchCity);
 
-// On start: use the saved location if there is one, otherwise ask the device
+// On start: use the saved city if there is one, otherwise ask you to type one
 const savedLocation = loadLocation();
 if (savedLocation) getWeather(savedLocation);
-else useDeviceLocation();
+else showCityForm("Type your city to see the weather.");

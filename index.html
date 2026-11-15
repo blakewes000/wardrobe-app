@@ -30,7 +30,7 @@
         <h2 class="panel-title">// Local conditions</h2>
         <div class="weather-buttons">
           <button class="btn btn-small" id="weather-refresh">Refresh</button>
-          <button class="btn btn-small" id="weather-change">Location</button>
+          <button class="btn btn-small" id="weather-change">City</button>
         </div>
       </div>
 
@@ -44,14 +44,13 @@
         </dl>
       </div>
 
-      <!-- Status messages, like "Locating..." or errors -->
-      <p class="weather-message" id="weather-message">&gt; Locating...</p>
+      <!-- Status messages, like "Fetching weather..." or errors -->
+      <p class="weather-message" id="weather-message" hidden></p>
 
-      <!-- Type-your-city box. Only shown if needed or if you press "Location". -->
+      <!-- Type-your-city box. Shown when no city is set yet, or when you press "City". -->
       <form class="city-form" id="city-form" hidden>
         <input id="city-input" type="text" placeholder="Type your city" maxlength="60" required>
         <button type="submit" class="btn btn-small btn-good">Set</button>
-        <button type="button" class="btn btn-small" id="use-gps-button">Use GPS</button>
       </form>
     </section>
 
