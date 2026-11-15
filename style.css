@@ -349,6 +349,68 @@ h1, h2, .glow {
   font-size: 0.75rem;
 }
 
+/* ===== Weather box ===== */
+.weather-panel {
+  border-color: var(--cyan-dim);
+}
+
+.weather-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.weather-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+/* Big temperature on the left, details on the right */
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.weather-temp {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1;
+  min-width: 3.5ch;
+}
+
+.weather-message {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: var(--cyan);
+}
+.weather-message.error {
+  color: var(--red);
+}
+
+/* City box: text field and two buttons in a row */
+.city-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+.city-form input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font);
+  font-size: 1rem; /* 16px stops phones from zooming in */
+  color: var(--amber);
+  background: var(--bg);
+  border: 1px solid var(--amber-dim);
+  border-radius: 0;
+  padding: 6px 8px;
+}
+.city-form input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+
 /* ===== Bottom menu ===== */
 .bottom-nav {
   position: fixed; /* stays stuck to the bottom of the screen */

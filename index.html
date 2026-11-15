@@ -24,6 +24,37 @@
   <!-- Main area -->
   <main class="content">
 
+    <!-- Weather box. weather.js fills this in. -->
+    <section class="panel weather-panel">
+      <div class="weather-head">
+        <h2 class="panel-title">// Local conditions</h2>
+        <div class="weather-buttons">
+          <button class="btn btn-small" id="weather-refresh">Refresh</button>
+          <button class="btn btn-small" id="weather-change">Location</button>
+        </div>
+      </div>
+
+      <div class="weather-main">
+        <p class="weather-temp glow" id="weather-temp">--°</p>
+        <dl class="item-details">
+          <dt>SKY</dt>    <dd id="weather-sky">--</dd>
+          <dt>FEELS</dt>  <dd id="weather-feels">--</dd>
+          <dt>SEASON</dt> <dd id="weather-season">--</dd>
+          <dt>LOC</dt>    <dd id="weather-place">--</dd>
+        </dl>
+      </div>
+
+      <!-- Status messages, like "Locating..." or errors -->
+      <p class="weather-message" id="weather-message">&gt; Locating...</p>
+
+      <!-- Type-your-city box. Only shown if needed or if you press "Location". -->
+      <form class="city-form" id="city-form" hidden>
+        <input id="city-input" type="text" placeholder="Type your city" maxlength="60" required>
+        <button type="submit" class="btn btn-small btn-good">Set</button>
+        <button type="button" class="btn btn-small" id="use-gps-button">Use GPS</button>
+      </form>
+    </section>
+
     <!-- Button that opens the Add-item form -->
     <button class="btn btn-wide" id="open-form-button">+ Add item</button>
 
@@ -103,7 +134,9 @@
     <button class="nav-button">Saved</button>
   </nav>
 
-  <!-- Load the JavaScript (the app's "brain") last, after the page is built -->
+  <!-- Load the JavaScript last, after the page is built.
+       weather.js handles the weather box; app.js handles your clothes. -->
+  <script src="weather.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
