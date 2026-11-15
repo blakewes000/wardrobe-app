@@ -1,0 +1,3 @@
+# Files Git should ignore (never save in snapshots or upload).
+# .claude holds Claude's local helper settings, which only matter on this computer.
+.claude/
