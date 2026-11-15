@@ -1,5 +1,5 @@
 // app.js: the "brain" of the Wardrobe app.
-// Step 2: add clothes, show them in a list, remove them.
+// Add clothes (with photos), show them in a list, edit them, remove them.
 // Clothes are saved in IndexedDB, a storage area built into the browser.
 
 // ===== Part 1: The database (where clothes are saved) =====
@@ -37,15 +37,17 @@ async function useStore(mode, action) {
   });
 }
 
-// The three things we can do with clothes right now
+// The things we can do with clothes
 const getAllItems = () => useStore("readonly", (store) => store.getAll());
 const addItem = (item) => useStore("readwrite", (store) => store.add(item));
+const updateItem = (item) => useStore("readwrite", (store) => store.put(item)); // replaces the item with the same id
 const deleteItem = (id) => useStore("readwrite", (store) => store.delete(id));
 
 // ===== Part 2: Grab the parts of the page we need =====
 
 const openFormButton = document.getElementById("open-form-button");
 const form = document.getElementById("add-form");
+const formTitle = document.getElementById("form-title");
 const cancelButton = document.getElementById("cancel-button");
 const list = document.getElementById("item-list");
 const emptyMessage = document.getElementById("empty-message");
@@ -57,14 +59,114 @@ const warmthInput = document.getElementById("item-warmth");
 const colorInput = document.getElementById("item-color");
 const tagsInput = document.getElementById("item-tags");
 
-// ===== Part 3: Show the list of clothes =====
+const photoInput = document.getElementById("item-photo");
+const photoPreview = document.getElementById("photo-preview");
+const removePhotoButton = document.getElementById("remove-photo-button");
+
+// ===== Part 3: Remembering what the form is doing =====
+
+let editingId = null;    // null = adding a new item. A number = editing that item.
+let currentPhoto = null; // the photo chosen in the form (or null for none)
+let photoLinks = [];     // temporary links to photos on cards (cleaned up on redraw)
+let previewLink = null;  // temporary link to the photo in the form
+
+// ===== Part 4: Photos =====
+
+const MAX_PHOTO_SIZE = 800; // longest side in pixels. Keeps storage small.
+
+// Phone photos are huge (several MB). This shrinks one to at most
+// 800 pixels wide or tall and saves it as a JPEG picture.
+function shrinkPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const link = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = () => {
+      // Work out the new size (never make a small photo bigger)
+      const scale = Math.min(1, MAX_PHOTO_SIZE / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+
+      // Draw the photo smaller onto the canvas, then save the canvas as a picture
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(link);
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("shrink failed"))),
+        "image/jpeg",
+        0.8 // quality: 0.8 looks good and stays small
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(link);
+      reject(new Error("That file couldn't be opened as a picture."));
+    };
+
+    img.src = link;
+  });
+}
+
+// Shows a photo (or "NO IMG") inside a square photo box
+function fillPhotoBox(box, photo, link) {
+  box.innerHTML = "";
+  if (photo) {
+    const img = document.createElement("img");
+    img.src = link;
+    img.alt = "";
+    box.append(img);
+  } else {
+    box.textContent = "NO IMG";
+  }
+}
+
+// Updates the preview box in the form to match currentPhoto
+function showPreview() {
+  if (previewLink) URL.revokeObjectURL(previewLink); // free the old link
+  previewLink = currentPhoto ? URL.createObjectURL(currentPhoto) : null;
+  fillPhotoBox(photoPreview, currentPhoto, previewLink);
+  removePhotoButton.hidden = !currentPhoto;
+}
+
+// Runs when you pick a photo
+async function photoChosen() {
+  const file = photoInput.files[0];
+  if (!file) return;
+  try {
+    currentPhoto = await shrinkPhoto(file);
+    showPreview();
+  } catch (error) {
+    alert("Sorry, that photo couldn't be used. Try a JPG or PNG picture.");
+  }
+  photoInput.value = ""; // so choosing the same file again still works
+}
+
+function removePhoto() {
+  currentPhoto = null;
+  showPreview();
+}
+
+// ===== Part 5: Show the list of clothes =====
 
 // Builds one card for one item
 function makeCard(item) {
   const card = document.createElement("li");
   card.className = "panel item-card";
 
-  // Top row: ID number, name, and Remove button
+  // Left side: the photo
+  const photoBox = document.createElement("div");
+  photoBox.className = "photo-box";
+  let link = null;
+  if (item.photo) {
+    link = URL.createObjectURL(item.photo);
+    photoLinks.push(link); // remember it so we can clean it up later
+  }
+  fillPhotoBox(photoBox, item.photo, link);
+
+  // Right side: name, details, buttons
+  const body = document.createElement("div");
+  body.className = "item-body";
+
   const head = document.createElement("div");
   head.className = "item-head";
 
@@ -77,12 +179,21 @@ function makeCard(item) {
   name.textContent = item.name;
   titleBox.append(idLabel, name);
 
+  const actions = document.createElement("div");
+  actions.className = "item-actions";
+
+  const editButton = document.createElement("button");
+  editButton.className = "btn btn-small";
+  editButton.textContent = "Edit";
+  editButton.addEventListener("click", () => openForm(item));
+
   const removeButton = document.createElement("button");
   removeButton.className = "btn btn-danger";
   removeButton.textContent = "Remove";
   removeButton.addEventListener("click", () => removeItem(item));
 
-  head.append(titleBox, removeButton);
+  actions.append(editButton, removeButton);
+  head.append(titleBox, actions);
 
   // Detail rows: category, color, warmth, tags
   const details = document.createElement("dl");
@@ -104,7 +215,8 @@ function makeCard(item) {
   }
   addDetail(details, "TAGS", tagsValue);
 
-  card.append(head, details);
+  body.append(head, details);
+  card.append(photoBox, body);
   return card;
 }
 
@@ -126,6 +238,10 @@ async function showItems() {
   const items = await getAllItems();
   items.reverse(); // newest first
 
+  // Free the photo links from the last time we drew the list
+  photoLinks.forEach((link) => URL.revokeObjectURL(link));
+  photoLinks = [];
+
   list.innerHTML = ""; // clear the old list
   for (const item of items) {
     list.append(makeCard(item));
@@ -136,16 +252,39 @@ async function showItems() {
   itemCount.textContent = "ITEMS: " + items.length;
 }
 
-// ===== Part 4: Opening, closing, and saving the form =====
+// ===== Part 6: Opening, closing, and saving the form =====
 
-function openForm() {
+// Opens the form. With no item it's a blank "new item" form.
+// With an item, the boxes are filled in so you can edit it.
+function openForm(item) {
+  form.reset();
+  if (item && item.id) {
+    editingId = item.id;
+    formTitle.textContent = "// Edit item " + String(item.id).padStart(4, "0");
+    nameInput.value = item.name;
+    categoryInput.value = item.category;
+    warmthInput.value = item.warmth;
+    colorInput.value = item.color;
+    tagsInput.value = item.tags.join(", ");
+    currentPhoto = item.photo || null;
+  } else {
+    editingId = null;
+    formTitle.textContent = "// New item";
+    currentPhoto = null;
+  }
+  showPreview();
+
   form.hidden = false;
   openFormButton.hidden = true;
-  nameInput.focus(); // put the cursor in the Name box
+  form.scrollIntoView({ behavior: "smooth", block: "start" }); // jump up to the form
+  nameInput.focus({ preventScroll: true }); // put the cursor in the Name box
 }
 
 function closeForm() {
   form.reset(); // empty all the boxes
+  editingId = null;
+  currentPhoto = null;
+  showPreview();
   form.hidden = true;
   openFormButton.hidden = false;
 }
@@ -166,15 +305,25 @@ async function saveForm(event) {
     warmth: warmthInput.value,
     color: colorInput.value.trim().toLowerCase(),
     tags: tags,
-    addedAt: Date.now(), // when it was added
+    photo: currentPhoto, // the shrunk photo, or null
   };
 
-  await addItem(item);
+  if (editingId) {
+    // Editing: keep the same id and original "added" time
+    const old = (await getAllItems()).find((i) => i.id === editingId);
+    item.id = editingId;
+    item.addedAt = old ? old.addedAt : Date.now();
+    await updateItem(item);
+  } else {
+    item.addedAt = Date.now(); // when it was added
+    await addItem(item);
+  }
+
   closeForm();
   showItems();
 }
 
-// ===== Part 5: Removing an item =====
+// ===== Part 7: Removing an item =====
 
 async function removeItem(item) {
   // Ask first, so nothing gets deleted by accident
@@ -182,13 +331,16 @@ async function removeItem(item) {
   if (!sure) return;
 
   await deleteItem(item.id);
+  if (editingId === item.id) closeForm(); // don't keep editing a deleted item
   showItems();
 }
 
-// ===== Part 6: Connect buttons to actions, then start =====
+// ===== Part 8: Connect buttons to actions, then start =====
 
-openFormButton.addEventListener("click", openForm);
+openFormButton.addEventListener("click", () => openForm());
 cancelButton.addEventListener("click", closeForm);
 form.addEventListener("submit", saveForm);
+photoInput.addEventListener("change", photoChosen);
+removePhotoButton.addEventListener("click", removePhoto);
 
 showItems(); // draw the list when the page first opens

@@ -23,6 +23,11 @@
   box-sizing: border-box; /* makes sizes easier to predict */
 }
 
+/* Anything marked "hidden" in the HTML stays hidden, no matter what */
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   font-family: var(--font);
@@ -185,7 +190,8 @@ h1, h2, .glow {
   margin-bottom: 12px;
 }
 
-.form-row label {
+.form-row > label,
+.label-text {
   display: block;
   font-size: 0.75rem;
   color: var(--amber-dim);
@@ -228,11 +234,71 @@ h1, h2, .glow {
   flex: 1;
 }
 
+/* Smaller version of a button */
+.btn-small {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* ===== Photos ===== */
+
+/* A square box that shows a photo, or "NO IMG" if there isn't one */
+.photo-box {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0; /* don't let it get squished */
+  border: 1px solid var(--cyan-dim);
+  background: var(--bg);
+  color: var(--cyan-dim);
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.photo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fills the square without stretching */
+  display: block;
+}
+
+/* Photo box and its buttons sit side by side in the form */
+.photo-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.photo-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 /* ===== Wardrobe item cards ===== */
 .item-list {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* Each card: photo on the left, details on the right */
+.item-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.item-body {
+  flex: 1;
+  min-width: 0; /* lets long words wrap instead of overflowing */
+}
+
+/* Edit and Remove buttons stacked on the right */
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .item-card .item-head {

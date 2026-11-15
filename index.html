@@ -29,7 +29,22 @@
 
     <!-- Add-item form. "hidden" means it starts closed. -->
     <form class="panel" id="add-form" hidden>
-      <h2 class="panel-title">// New item</h2>
+      <h2 class="panel-title" id="form-title">// New item</h2>
+
+      <!-- Photo: a preview box plus buttons to choose or remove a photo -->
+      <div class="form-row">
+        <span class="label-text">Photo</span>
+        <div class="photo-picker">
+          <div class="photo-box" id="photo-preview">NO IMG</div>
+          <div class="photo-buttons">
+            <!-- Tapping this label opens the hidden file chooser below.
+                 On phones it offers the camera or your photo library. -->
+            <label class="btn btn-small" for="item-photo">Choose photo</label>
+            <input id="item-photo" type="file" accept="image/*" hidden>
+            <button type="button" class="btn btn-danger" id="remove-photo-button" hidden>Remove photo</button>
+          </div>
+        </div>
+      </div>
 
       <div class="form-row">
         <label for="item-name">Name</label>
