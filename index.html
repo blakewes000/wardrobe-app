@@ -164,6 +164,57 @@
       <!-- The list of saved outfits. outfit.js fills this in. -->
       <ul class="item-list" id="saved-list"></ul>
     </section>
+
+    <!-- =================== SCREEN 4: SETTINGS =================== -->
+    <!-- settings.js makes these work -->
+    <section class="screen" id="screen-settings" hidden>
+
+      <!-- City for the weather -->
+      <form class="panel" id="settings-city-form">
+        <h2 class="panel-title">// City</h2>
+        <p class="setting-note">Current: <span class="setting-value" id="settings-city-now">none</span></p>
+        <div class="city-form">
+          <input id="settings-city-input" type="text" placeholder="Type your city" maxlength="60" required>
+          <button type="submit" class="btn btn-small btn-good">Set</button>
+        </div>
+        <p class="setting-message" id="settings-city-message" hidden></p>
+      </form>
+
+      <!-- °F or °C -->
+      <section class="panel">
+        <h2 class="panel-title">// Temperature unit</h2>
+        <div class="toggle">
+          <button class="btn toggle-option" data-unit="F">°F</button>
+          <button class="btn toggle-option" data-unit="C">°C</button>
+        </div>
+      </section>
+
+      <!-- Forget Likes and Dislikes -->
+      <section class="panel">
+        <h2 class="panel-title">// Learned taste</h2>
+        <p class="setting-note" id="settings-learned-info">--</p>
+        <button class="btn btn-bad btn-wide" id="reset-learning-button">Reset what the app learned</button>
+      </section>
+
+      <!-- Wipe everything -->
+      <section class="panel danger-panel">
+        <h2 class="panel-title danger-title">// Danger zone</h2>
+        <p class="setting-note">
+          Deletes every item, photo, saved outfit, learned taste, and setting from this browser.
+          This can't be undone.
+        </p>
+        <button class="btn btn-bad btn-wide" id="clear-all-button">Clear all data</button>
+      </section>
+
+      <!-- Where data lives -->
+      <section class="panel">
+        <h2 class="panel-title">// Storage</h2>
+        <p class="setting-note">
+          Everything is stored only in this browser on this device. Your phone and computer keep separate wardrobes.
+        </p>
+        <p class="setting-note" id="settings-storage-info"></p>
+      </section>
+    </section>
   </main>
 
   <!-- Bottom menu. Each button shows the screen named in data-screen. -->
@@ -171,13 +222,16 @@
     <button class="nav-button active" data-screen="screen-wardrobe">Wardrobe</button>
     <button class="nav-button" data-screen="screen-outfit">Outfit</button>
     <button class="nav-button" data-screen="screen-saved">Saved</button>
+    <button class="nav-button" data-screen="screen-settings">Settings</button>
   </nav>
 
   <!-- Load the JavaScript last, after the page is built.
        weather.js = weather box, app.js = your clothes and the menu,
-       outfit.js = the Generate Outfit rules. -->
+       outfit.js = outfits, Like/Dislike, Saved screen,
+       settings.js = the Settings screen. -->
   <script src="weather.js"></script>
   <script src="app.js"></script>
   <script src="outfit.js"></script>
+  <script src="settings.js"></script>
 </body>
 </html>

@@ -125,34 +125,49 @@ function showWeather() {
 
 // ===== Part 5: Finding your city =====
 
-// You type a city, and Open-Meteo's free search finds where it is
+// Looks up a city with Open-Meteo's free search, saves it, and gets its weather.
+// Used by the weather box AND the Settings screen.
+// Returns the place name on success. Throws an error with a friendly message if not.
+async function setCity(city) {
+  const url =
+    "https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=" +
+    encodeURIComponent(city);
+
+  let data;
+  try {
+    const response = await fetch(url);
+    data = await response.json();
+  } catch (error) {
+    throw new Error("Couldn't search right now. Check your internet and try again.");
+  }
+  if (!data.results || data.results.length === 0) {
+    throw new Error('No place called "' + city + '" was found. Try another spelling.');
+  }
+
+  const place = data.results[0];
+  // e.g. "Seattle, Washington, United States". Skips missing parts, and skips
+  // the region if it repeats the city name (so not "Tokyo, Tokyo, Japan").
+  const region = place.admin1 !== place.name ? place.admin1 : null;
+  const name = [place.name, region, place.country].filter(Boolean).join(", ");
+  const location = { lat: place.latitude, lon: place.longitude, name };
+  saveLocation(location);
+  cityForm.hidden = true;
+  getWeather(location);
+  return name;
+}
+
+// Runs when you press Set in the weather box
 async function searchCity(event) {
   event.preventDefault(); // stop the page from reloading
   const city = cityInput.value.trim();
   if (!city) return;
 
   setWeatherMessage("Searching for " + city + "...");
-  const url =
-    "https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=" +
-    encodeURIComponent(city);
-
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-    if (!data.results || data.results.length === 0) {
-      setWeatherMessage('No place called "' + city + '" was found. Try another spelling.', true);
-      return;
-    }
-    const place = data.results[0];
-    // e.g. "Seattle, Washington, United States" (skips any parts that are missing)
-    const name = [place.name, place.admin1, place.country].filter(Boolean).join(", ");
-    const location = { lat: place.latitude, lon: place.longitude, name };
-    saveLocation(location);
-    cityForm.hidden = true;
+    await setCity(city);
     cityInput.value = "";
-    getWeather(location);
   } catch (error) {
-    setWeatherMessage("Couldn't search right now. Check your internet and try again.", true);
+    setWeatherMessage(error.message, true);
   }
 }
 

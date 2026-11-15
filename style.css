@@ -541,6 +541,57 @@ h1, h2, .glow {
   color: var(--red);
 }
 
+/* ===== Settings screen ===== */
+.setting-note {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  color: var(--amber-dim);
+  line-height: 1.4;
+}
+.setting-value {
+  color: var(--amber);
+  text-transform: uppercase;
+}
+.setting-message {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+.setting-message.error {
+  color: var(--red);
+}
+
+/* °F / °C switch: two buttons side by side, the chosen one is filled in */
+.toggle {
+  display: flex;
+}
+.toggle-option {
+  flex: 1;
+}
+.toggle-option + .toggle-option {
+  border-left: none; /* so the two buttons share one middle line */
+}
+.toggle-option.active {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: var(--bg);
+}
+
+/* Red-outlined box for Clear all data */
+.danger-panel {
+  border-color: var(--red);
+}
+.danger-panel::before,
+.danger-panel::after {
+  border-color: var(--red);
+}
+.danger-title {
+  color: var(--red);
+}
+.danger-panel .btn-wide {
+  margin-bottom: 0;
+}
+
 /* ===== Bottom menu ===== */
 .bottom-nav {
   position: fixed; /* stays stuck to the bottom of the screen */
@@ -558,9 +609,9 @@ h1, h2, .glow {
   border: none;
   background: none;
   font-family: var(--font);
-  font-size: 0.95rem;
+  font-size: 0.85rem; /* a bit smaller so four buttons fit on a phone */
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--amber-dim);
   cursor: pointer;
 }
