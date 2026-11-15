@@ -1,0 +1,76 @@
+/* ===== Colors used across the app ===== */
+:root {
+  --background: #f6f4f1;  /* soft off-white page color */
+  --surface: #ffffff;     /* white for bars and cards */
+  --text: #222222;        /* main text color */
+  --muted: #777777;       /* lighter gray text */
+  --accent: #3b5bdb;      /* blue for the selected button */
+  --border: #e2ded8;      /* thin line color */
+}
+
+/* ===== Basic page setup ===== */
+* {
+  box-sizing: border-box; /* makes sizes easier to predict */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ===== Top bar ===== */
+.top-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  text-align: center;
+}
+
+.top-bar h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+/* ===== Main content area ===== */
+.content {
+  padding: 16px;
+  padding-bottom: 90px; /* leaves room so the bottom menu doesn't cover content */
+  max-width: 700px;     /* keeps it readable on big computer screens */
+  margin: 0 auto;       /* centers it on big screens */
+}
+
+.placeholder {
+  color: var(--muted);
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* ===== Bottom menu ===== */
+.bottom-nav {
+  position: fixed; /* stays stuck to the bottom of the screen */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.nav-button {
+  flex: 1; /* each button takes an equal share of the width */
+  padding: 18px 0;
+  border: none;
+  background: none;
+  font-size: 1rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* The button for the screen you're on */
+.nav-button.active {
+  color: var(--accent);
+  font-weight: 600;
+}
