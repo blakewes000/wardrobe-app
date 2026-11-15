@@ -145,13 +145,24 @@
       <section id="outfit-result" hidden>
         <p class="outfit-summary" id="outfit-summary"></p>
         <ul class="item-list" id="outfit-list"></ul>
+
+        <!-- Like and Dislike teach the app your taste. Save just keeps the outfit. -->
+        <div class="outfit-actions" id="outfit-actions">
+          <button class="btn btn-good" id="like-button">&#9650; Like</button>
+          <button class="btn btn-bad" id="dislike-button">&#9660; Dislike</button>
+          <button class="btn" id="save-button">&#9632; Save</button>
+        </div>
+        <p class="outfit-feedback" id="outfit-feedback" hidden></p>
+
         <p class="outfit-notes" id="outfit-notes"></p>
       </section>
     </section>
 
     <!-- =================== SCREEN 3: SAVED =================== -->
     <section class="screen" id="screen-saved" hidden>
-      <p class="placeholder">&gt; Saved outfits arrive in step 6.</p>
+      <p class="placeholder" id="saved-empty">&gt; No saved outfits yet. Generate one and press Save.</p>
+      <!-- The list of saved outfits. outfit.js fills this in. -->
+      <ul class="item-list" id="saved-list"></ul>
     </section>
   </main>
 

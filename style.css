@@ -463,6 +463,84 @@ h1, h2, .glow {
   color: var(--amber-dim);
 }
 
+/* Like / Dislike / Save in a row */
+.outfit-actions {
+  display: flex;
+  gap: 8px;
+}
+.outfit-actions .btn {
+  flex: 1;
+  padding: 12px 6px;
+}
+/* Greyed-out look for buttons that were already used */
+.btn:disabled {
+  opacity: 0.4;
+  pointer-events: none; /* no hover color, can't be clicked */
+}
+
+/* Red full-size button (Dislike) */
+.btn-bad {
+  color: var(--red);
+  border-color: var(--red);
+}
+.btn-bad:hover,
+.btn-bad:focus-visible {
+  background: var(--red);
+  color: var(--bg);
+}
+
+/* Message after pressing a button, like "Saved." */
+.outfit-feedback {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+
+/* ===== Saved screen ===== */
+.saved-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.saved-vibe {
+  margin: 2px 0 0;
+  font-size: 1rem;
+  font-weight: normal;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+.saved-meta {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--cyan);
+}
+
+/* Row of small photos with names under them */
+.saved-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.saved-items li {
+  width: 72px;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+.photo-box.small {
+  width: 72px;
+  height: 72px;
+  margin-bottom: 4px;
+}
+.deleted {
+  color: var(--red);
+}
+
 /* ===== Bottom menu ===== */
 .bottom-nav {
   position: fixed; /* stays stuck to the bottom of the screen */

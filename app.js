@@ -5,32 +5,56 @@
 // ===== Part 1: The database (where clothes are saved) =====
 
 const DB_NAME = "wardrobe-db"; // name of our storage area
-const DB_VERSION = 1;          // bump this if we ever change the layout
+const DB_VERSION = 2;          // version 2 added the "outfits" table
 const STORE = "items";         // the "table" that holds clothes
+const OUTFIT_STORE = "outfits"; // the "table" that holds saved outfits
 
-// Opens the database. Creates it the first time the app runs.
+// Opens the database once, then reuses it. Creates it the first time the app runs.
+let dbPromise = null;
 function openDatabase() {
+  if (!dbPromise) dbPromise = connectDatabase();
+  return dbPromise;
+}
+
+function connectDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-    // Runs only when the database is new (or the version goes up)
+    // Runs only when the database is new (or the version goes up).
+    // Each table is only created if it doesn't exist yet, so your clothes are kept.
     request.onupgradeneeded = () => {
       const db = request.result;
-      // Each item gets an automatic number called "id"
-      db.createObjectStore(STORE, { keyPath: "id", autoIncrement: true });
+      if (!db.objectStoreNames.contains(STORE)) {
+        // Each item gets an automatic number called "id"
+        db.createObjectStore(STORE, { keyPath: "id", autoIncrement: true });
+      }
+      if (!db.objectStoreNames.contains(OUTFIT_STORE)) {
+        db.createObjectStore(OUTFIT_STORE, { keyPath: "id", autoIncrement: true });
+      }
     };
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      // If a newer version of the app opens in another tab, step aside so it can upgrade
+      db.onversionchange = () => {
+        db.close();
+        dbPromise = null;
+      };
+      resolve(db);
+    };
+    request.onerror = () => {
+      dbPromise = null; // try again next time
+      reject(request.error);
+    };
   });
 }
 
-// Small helper: runs one action on the items store and waits for the result.
+// Small helper: runs one action on a table and waits for the result.
 // mode is "readonly" (just looking) or "readwrite" (changing things).
-async function useStore(mode, action) {
+async function useStore(storeName, mode, action) {
   const db = await openDatabase();
   return new Promise((resolve, reject) => {
-    const store = db.transaction(STORE, mode).objectStore(STORE);
+    const store = db.transaction(storeName, mode).objectStore(storeName);
     const request = action(store);
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -38,10 +62,15 @@ async function useStore(mode, action) {
 }
 
 // The things we can do with clothes
-const getAllItems = () => useStore("readonly", (store) => store.getAll());
-const addItem = (item) => useStore("readwrite", (store) => store.add(item));
-const updateItem = (item) => useStore("readwrite", (store) => store.put(item)); // replaces the item with the same id
-const deleteItem = (id) => useStore("readwrite", (store) => store.delete(id));
+const getAllItems = () => useStore(STORE, "readonly", (store) => store.getAll());
+const addItem = (item) => useStore(STORE, "readwrite", (store) => store.add(item));
+const updateItem = (item) => useStore(STORE, "readwrite", (store) => store.put(item)); // replaces the item with the same id
+const deleteItem = (id) => useStore(STORE, "readwrite", (store) => store.delete(id));
+
+// The things we can do with saved outfits (used by outfit.js)
+const getAllOutfits = () => useStore(OUTFIT_STORE, "readonly", (store) => store.getAll());
+const addOutfit = (outfit) => useStore(OUTFIT_STORE, "readwrite", (store) => store.add(outfit));
+const deleteOutfit = (id) => useStore(OUTFIT_STORE, "readwrite", (store) => store.delete(id));
 
 // ===== Part 2: Grab the parts of the page we need =====
 
