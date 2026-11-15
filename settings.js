@@ -41,7 +41,13 @@ async function showStorageInfo() {
   }
   const { usage } = await navigator.storage.estimate();
   const mb = (usage / (1024 * 1024)).toFixed(1);
-  storageInfo.textContent = "About " + mb + " MB used.";
+  // "Protected" means the browser promised not to auto-delete it when space runs low
+  const protectedNow = navigator.storage.persisted ? await navigator.storage.persisted() : false;
+  storageInfo.textContent =
+    "About " + mb + " MB used. " +
+    (protectedNow
+      ? "Protected from automatic cleanup: YES."
+      : "Protected from automatic cleanup: not yet (usually turns on after you install the app).");
 }
 
 // ===== Part 3: City =====
@@ -123,6 +129,7 @@ document.getElementById("clear-all-button").addEventListener("click", async () =
   location.reload();
 });
 
-// ===== Part 7: Refresh this screen each time you open it =====
+// ===== Part 7: Refresh this screen each time it opens =====
 
-document.querySelector('[data-screen="screen-settings"]').addEventListener("click", showSettings);
+screenHooks["screen-settings"] = showSettings; // screenHooks is from app.js
+if (!document.getElementById("screen-settings").hidden) showSettings(); // in case the app opened here

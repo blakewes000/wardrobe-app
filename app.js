@@ -369,18 +369,37 @@ async function removeItem(item) {
 const navButtons = document.querySelectorAll(".nav-button");
 const screens = document.querySelectorAll(".screen");
 
+// Other files can add a function here to run when their screen opens,
+// e.g. screenHooks["screen-saved"] = showSaved;
+const screenHooks = {};
+
 // Shows one screen, hides the others, and lights up the matching button
 function showScreen(screenId) {
+  if (!document.getElementById(screenId)) screenId = "screen-wardrobe"; // unknown: go home
   screens.forEach((screen) => (screen.hidden = screen.id !== screenId));
   navButtons.forEach((button) =>
     button.classList.toggle("active", button.dataset.screen === screenId)
   );
   window.scrollTo(0, 0); // start at the top of the new screen
+  if (screenHooks[screenId]) screenHooks[screenId]();
+}
+
+// The screen's name goes at the end of the web address, like "#outfit".
+// That way the phone's Back button goes to the previous screen
+// instead of closing the app.
+function screenFromAddress() {
+  const name = location.hash.slice(1) || "wardrobe"; // "#outfit" -> "outfit"
+  return "screen-" + name;
 }
 
 navButtons.forEach((button) =>
-  button.addEventListener("click", () => showScreen(button.dataset.screen))
+  button.addEventListener("click", () => {
+    const name = button.dataset.screen.replace("screen-", ""); // "screen-outfit" -> "outfit"
+    if (location.hash !== "#" + name) location.hash = name; // this triggers "hashchange" below
+    else showScreen(button.dataset.screen); // already there: just refresh it
+  })
 );
+window.addEventListener("hashchange", () => showScreen(screenFromAddress()));
 
 // ===== Part 9: Connect buttons to actions, then start =====
 
@@ -391,3 +410,16 @@ photoInput.addEventListener("change", photoChosen);
 removePhotoButton.addEventListener("click", removePhoto);
 
 showItems(); // draw the list when the page first opens
+
+// ===== Part 10: Phone app extras =====
+
+// Turn on offline support (only works when the app is on a web address, not a file)
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js");
+}
+
+// Ask the browser not to delete our data when the phone runs low on space.
+// Chrome decides by itself (no pop-up); it usually says yes once the app is installed.
+if (navigator.storage && navigator.storage.persist) {
+  navigator.storage.persist();
+}

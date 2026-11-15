@@ -578,5 +578,8 @@ async function showSaved() {
   savedEmpty.hidden = records.length > 0;
 }
 
-// Redraw the Saved list each time you open the Saved screen
-document.querySelector('[data-screen="screen-saved"]').addEventListener("click", showSaved);
+// Redraw the Saved list each time the Saved screen opens
+screenHooks["screen-saved"] = showSaved; // screenHooks is from app.js
+
+// All files are loaded now, so open the screen named in the web address (e.g. "#outfit")
+showScreen(screenFromAddress());
