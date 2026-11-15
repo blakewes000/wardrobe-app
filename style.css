@@ -411,6 +411,58 @@ h1, h2, .glow {
   border-color: var(--cyan);
 }
 
+/* ===== Outfit screen ===== */
+
+/* The Generate button is a bit bigger and glows green */
+.btn-generate {
+  margin: 4px 0 0;
+  padding: 14px;
+  font-size: 1.05rem;
+  text-shadow: 0 0 6px rgba(93, 255, 138, 0.6);
+}
+
+/* One line at the top of the result, like "TARGET: WARM · OUTERWEAR: YES" */
+.outfit-summary {
+  margin: 4px 0 12px;
+  font-size: 0.8rem;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+/* The slot label on each outfit card, like "[ TOP ]" */
+.slot-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--cyan);
+}
+
+/* Small line explaining why an item was picked */
+.reason {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  color: var(--amber-dim);
+  text-transform: uppercase;
+}
+.reason .hit {
+  color: var(--green);
+}
+.reason .miss {
+  color: var(--red);
+}
+
+/* A missing piece (e.g. no shoes in your wardrobe yet) */
+.slot-missing {
+  border-style: dashed;
+  color: var(--red);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.outfit-notes {
+  font-size: 0.8rem;
+  color: var(--amber-dim);
+}
+
 /* ===== Bottom menu ===== */
 .bottom-nav {
   position: fixed; /* stays stuck to the bottom of the screen */

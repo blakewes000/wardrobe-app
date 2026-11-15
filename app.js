@@ -335,7 +335,25 @@ async function removeItem(item) {
   showItems();
 }
 
-// ===== Part 8: Connect buttons to actions, then start =====
+// ===== Part 8: Bottom menu (switching screens) =====
+
+const navButtons = document.querySelectorAll(".nav-button");
+const screens = document.querySelectorAll(".screen");
+
+// Shows one screen, hides the others, and lights up the matching button
+function showScreen(screenId) {
+  screens.forEach((screen) => (screen.hidden = screen.id !== screenId));
+  navButtons.forEach((button) =>
+    button.classList.toggle("active", button.dataset.screen === screenId)
+  );
+  window.scrollTo(0, 0); // start at the top of the new screen
+}
+
+navButtons.forEach((button) =>
+  button.addEventListener("click", () => showScreen(button.dataset.screen))
+);
+
+// ===== Part 9: Connect buttons to actions, then start =====
 
 openFormButton.addEventListener("click", () => openForm());
 cancelButton.addEventListener("click", closeForm);

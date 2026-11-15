@@ -21,121 +21,152 @@
     <span class="status" id="item-count">ITEMS: 0</span>
   </header>
 
-  <!-- Main area -->
   <main class="content">
 
-    <!-- Weather box. weather.js fills this in. -->
-    <section class="panel weather-panel">
-      <div class="weather-head">
-        <h2 class="panel-title">// Local conditions</h2>
-        <div class="weather-buttons">
-          <button class="btn btn-small" id="weather-refresh">Refresh</button>
-          <button class="btn btn-small" id="weather-change">City</button>
-        </div>
-      </div>
+    <!-- =================== SCREEN 1: WARDROBE =================== -->
+    <section class="screen" id="screen-wardrobe">
 
-      <div class="weather-main">
-        <p class="weather-temp glow" id="weather-temp">--°</p>
-        <dl class="item-details">
-          <dt>SKY</dt>    <dd id="weather-sky">--</dd>
-          <dt>FEELS</dt>  <dd id="weather-feels">--</dd>
-          <dt>SEASON</dt> <dd id="weather-season">--</dd>
-          <dt>LOC</dt>    <dd id="weather-place">--</dd>
-        </dl>
-      </div>
+      <!-- Button that opens the Add-item form -->
+      <button class="btn btn-wide" id="open-form-button">+ Add item</button>
 
-      <!-- Status messages, like "Fetching weather..." or errors -->
-      <p class="weather-message" id="weather-message" hidden></p>
+      <!-- Add-item form. "hidden" means it starts closed. -->
+      <form class="panel" id="add-form" hidden>
+        <h2 class="panel-title" id="form-title">// New item</h2>
 
-      <!-- Type-your-city box. Shown when no city is set yet, or when you press "City". -->
-      <form class="city-form" id="city-form" hidden>
-        <input id="city-input" type="text" placeholder="Type your city" maxlength="60" required>
-        <button type="submit" class="btn btn-small btn-good">Set</button>
-      </form>
-    </section>
-
-    <!-- Button that opens the Add-item form -->
-    <button class="btn btn-wide" id="open-form-button">+ Add item</button>
-
-    <!-- Add-item form. "hidden" means it starts closed. -->
-    <form class="panel" id="add-form" hidden>
-      <h2 class="panel-title" id="form-title">// New item</h2>
-
-      <!-- Photo: a preview box plus buttons to choose or remove a photo -->
-      <div class="form-row">
-        <span class="label-text">Photo</span>
-        <div class="photo-picker">
-          <div class="photo-box" id="photo-preview">NO IMG</div>
-          <div class="photo-buttons">
-            <!-- Tapping this label opens the hidden file chooser below.
-                 On phones it offers the camera or your photo library. -->
-            <label class="btn btn-small" for="item-photo">Choose photo</label>
-            <input id="item-photo" type="file" accept="image/*" hidden>
-            <button type="button" class="btn btn-danger" id="remove-photo-button" hidden>Remove photo</button>
+        <!-- Photo: a preview box plus buttons to choose or remove a photo -->
+        <div class="form-row">
+          <span class="label-text">Photo</span>
+          <div class="photo-picker">
+            <div class="photo-box" id="photo-preview">NO IMG</div>
+            <div class="photo-buttons">
+              <!-- Tapping this label opens the hidden file chooser below.
+                   On phones it offers the camera or your photo library. -->
+              <label class="btn btn-small" for="item-photo">Choose photo</label>
+              <input id="item-photo" type="file" accept="image/*" hidden>
+              <button type="button" class="btn btn-danger" id="remove-photo-button" hidden>Remove photo</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-row">
-        <label for="item-name">Name</label>
-        <input id="item-name" type="text" placeholder="e.g. Black hoodie" required maxlength="60">
-      </div>
-
-      <!-- Category and warmth sit side by side -->
-      <div class="form-split">
         <div class="form-row">
-          <label for="item-category">Category</label>
-          <select id="item-category">
-            <option value="top">Top</option>
-            <option value="bottom">Bottom</option>
-            <option value="shoes">Shoes</option>
-            <option value="outerwear">Outerwear</option>
-            <option value="accessory">Accessory</option>
-          </select>
+          <label for="item-name">Name</label>
+          <input id="item-name" type="text" placeholder="e.g. Black hoodie" required maxlength="60">
         </div>
+
+        <!-- Category and warmth sit side by side -->
+        <div class="form-split">
+          <div class="form-row">
+            <label for="item-category">Category</label>
+            <select id="item-category">
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+              <option value="shoes">Shoes</option>
+              <option value="outerwear">Outerwear</option>
+              <option value="accessory">Accessory</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="item-warmth">Warmth</label>
+            <select id="item-warmth">
+              <option value="light">Light</option>
+              <option value="medium">Medium</option>
+              <option value="warm">Warm</option>
+            </select>
+          </div>
+        </div>
+
         <div class="form-row">
-          <label for="item-warmth">Warmth</label>
-          <select id="item-warmth">
-            <option value="light">Light</option>
-            <option value="medium">Medium</option>
-            <option value="warm">Warm</option>
-          </select>
+          <label for="item-color">Color</label>
+          <input id="item-color" type="text" placeholder="e.g. black" maxlength="30">
         </div>
-      </div>
 
-      <div class="form-row">
-        <label for="item-color">Color</label>
-        <input id="item-color" type="text" placeholder="e.g. black" maxlength="30">
-      </div>
+        <div class="form-row">
+          <label for="item-tags">Style tags (separate with commas)</label>
+          <input id="item-tags" type="text" placeholder="e.g. streetwear, casual" maxlength="120">
+        </div>
 
-      <div class="form-row">
-        <label for="item-tags">Style tags (separate with commas)</label>
-        <input id="item-tags" type="text" placeholder="e.g. streetwear, casual" maxlength="120">
-      </div>
+        <div class="form-buttons">
+          <button type="submit" class="btn btn-good">Save</button>
+          <button type="button" class="btn" id="cancel-button">Cancel</button>
+        </div>
+      </form>
 
-      <div class="form-buttons">
-        <button type="submit" class="btn btn-good">Save</button>
-        <button type="button" class="btn" id="cancel-button">Cancel</button>
-      </div>
-    </form>
+      <!-- Message shown when there are no clothes yet -->
+      <p class="placeholder" id="empty-message">&gt; Wardrobe empty. Add your first item.</p>
 
-    <!-- Message shown when there are no clothes yet -->
-    <p class="placeholder" id="empty-message">&gt; Wardrobe empty. Add your first item.</p>
+      <!-- The list of clothes. app.js fills this in. -->
+      <ul class="item-list" id="item-list"></ul>
+    </section>
 
-    <!-- The list of clothes. app.js fills this in. -->
-    <ul class="item-list" id="item-list"></ul>
+    <!-- =================== SCREEN 2: OUTFIT =================== -->
+    <section class="screen" id="screen-outfit" hidden>
+
+      <!-- Weather box. weather.js fills this in. -->
+      <section class="panel weather-panel">
+        <div class="weather-head">
+          <h2 class="panel-title">// Local conditions</h2>
+          <div class="weather-buttons">
+            <button class="btn btn-small" id="weather-refresh">Refresh</button>
+            <button class="btn btn-small" id="weather-change">City</button>
+          </div>
+        </div>
+
+        <div class="weather-main">
+          <p class="weather-temp glow" id="weather-temp">--°</p>
+          <dl class="item-details">
+            <dt>SKY</dt>    <dd id="weather-sky">--</dd>
+            <dt>FEELS</dt>  <dd id="weather-feels">--</dd>
+            <dt>SEASON</dt> <dd id="weather-season">--</dd>
+            <dt>LOC</dt>    <dd id="weather-place">--</dd>
+          </dl>
+        </div>
+
+        <!-- Status messages, like "Fetching weather..." or errors -->
+        <p class="weather-message" id="weather-message" hidden></p>
+
+        <!-- Type-your-city box. Shown when no city is set yet, or when you press "City". -->
+        <form class="city-form" id="city-form" hidden>
+          <input id="city-input" type="text" placeholder="Type your city" maxlength="60" required>
+          <button type="submit" class="btn btn-small btn-good">Set</button>
+        </form>
+      </section>
+
+      <!-- Style box: type a vibe, then press Generate -->
+      <form class="panel" id="style-form">
+        <h2 class="panel-title">// Style input</h2>
+        <div class="form-row">
+          <label for="style-input">Describe a vibe</label>
+          <input id="style-input" type="text" placeholder="e.g. dark streetwear" maxlength="80">
+        </div>
+        <button type="submit" class="btn btn-good btn-wide btn-generate">&gt;&gt; Generate outfit</button>
+      </form>
+
+      <!-- The result. outfit.js fills this in. -->
+      <section id="outfit-result" hidden>
+        <p class="outfit-summary" id="outfit-summary"></p>
+        <ul class="item-list" id="outfit-list"></ul>
+        <p class="outfit-notes" id="outfit-notes"></p>
+      </section>
+    </section>
+
+    <!-- =================== SCREEN 3: SAVED =================== -->
+    <section class="screen" id="screen-saved" hidden>
+      <p class="placeholder">&gt; Saved outfits arrive in step 6.</p>
+    </section>
   </main>
 
-  <!-- Bottom menu with three buttons (Outfit and Saved don't work yet) -->
+  <!-- Bottom menu. Each button shows the screen named in data-screen. -->
   <nav class="bottom-nav">
-    <button class="nav-button active">Wardrobe</button>
-    <button class="nav-button">Outfit</button>
-    <button class="nav-button">Saved</button>
+    <button class="nav-button active" data-screen="screen-wardrobe">Wardrobe</button>
+    <button class="nav-button" data-screen="screen-outfit">Outfit</button>
+    <button class="nav-button" data-screen="screen-saved">Saved</button>
   </nav>
 
   <!-- Load the JavaScript last, after the page is built.
-       weather.js handles the weather box; app.js handles your clothes. -->
+       weather.js = weather box, app.js = your clothes and the menu,
+       outfit.js = the Generate Outfit rules. -->
   <script src="weather.js"></script>
   <script src="app.js"></script>
+  <script src="outfit.js"></script>
 </body>
 </html>
