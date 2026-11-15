@@ -6,22 +6,82 @@
   <!-- Makes the page fit phone screens properly -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wardrobe</title>
+  <!-- Retro computer font from Google Fonts (falls back to Consolas if offline) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <!-- Load the styles (colors, sizes, layout) -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top bar with the app name -->
+  <!-- Top bar with the app name and a live item count -->
   <header class="top-bar">
-    <h1>Wardrobe</h1>
+    <h1>Wardrobe_Sys</h1>
+    <span class="status" id="item-count">ITEMS: 0</span>
   </header>
 
-  <!-- Main area: this is where each screen's content will go later -->
+  <!-- Main area -->
   <main class="content">
-    <p class="placeholder">Your wardrobe is empty for now.</p>
+
+    <!-- Button that opens the Add-item form -->
+    <button class="btn btn-wide" id="open-form-button">+ Add item</button>
+
+    <!-- Add-item form. "hidden" means it starts closed. -->
+    <form class="panel" id="add-form" hidden>
+      <h2 class="panel-title">// New item</h2>
+
+      <div class="form-row">
+        <label for="item-name">Name</label>
+        <input id="item-name" type="text" placeholder="e.g. Black hoodie" required maxlength="60">
+      </div>
+
+      <!-- Category and warmth sit side by side -->
+      <div class="form-split">
+        <div class="form-row">
+          <label for="item-category">Category</label>
+          <select id="item-category">
+            <option value="top">Top</option>
+            <option value="bottom">Bottom</option>
+            <option value="shoes">Shoes</option>
+            <option value="outerwear">Outerwear</option>
+            <option value="accessory">Accessory</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="item-warmth">Warmth</label>
+          <select id="item-warmth">
+            <option value="light">Light</option>
+            <option value="medium">Medium</option>
+            <option value="warm">Warm</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="item-color">Color</label>
+        <input id="item-color" type="text" placeholder="e.g. black" maxlength="30">
+      </div>
+
+      <div class="form-row">
+        <label for="item-tags">Style tags (separate with commas)</label>
+        <input id="item-tags" type="text" placeholder="e.g. streetwear, casual" maxlength="120">
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-good">Save</button>
+        <button type="button" class="btn" id="cancel-button">Cancel</button>
+      </div>
+    </form>
+
+    <!-- Message shown when there are no clothes yet -->
+    <p class="placeholder" id="empty-message">&gt; Wardrobe empty. Add your first item.</p>
+
+    <!-- The list of clothes. app.js fills this in. -->
+    <ul class="item-list" id="item-list"></ul>
   </main>
 
-  <!-- Bottom menu with three buttons (they don't do anything yet) -->
+  <!-- Bottom menu with three buttons (Outfit and Saved don't work yet) -->
   <nav class="bottom-nav">
     <button class="nav-button active">Wardrobe</button>
     <button class="nav-button">Outfit</button>
